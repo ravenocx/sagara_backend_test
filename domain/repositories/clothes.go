@@ -111,7 +111,7 @@ func (r *clothesRepository) IncreaseStock(cloth *entities.Clothes, stock int) (*
 	return cloth, nil
 }
 
-func (r *clothesRepository) ReduceStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error) {
+func (r *clothesRepository) DecreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error) {
 	var updatedCloth entities.Clothes
 
 	updatedCloth.Stock -= stock

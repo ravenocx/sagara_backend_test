@@ -5,6 +5,10 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/ravenocx/clothes-store/db"
+	"github.com/ravenocx/clothes-store/domain/repositories"
+	"github.com/ravenocx/clothes-store/routes"
+	"github.com/ravenocx/clothes-store/services"
 )
 
 func StartApp() {
@@ -24,5 +28,18 @@ func StartApp() {
 		})
 	})
 
-	app.Run(os.Getenv(":" + "SERVER_PORT"))
+	db, err := db.OpenConnection()
+	if err != nil {
+		panic(err)
+	}
+
+	clothesRepo := repositories.NewClothesRepository(db)
+	clothesService := services.NewClothesService(clothesRepo)
+
+	routes.SetupClothesRoutes(app, clothesService)
+
+	err = app.Run(os.Getenv(":" + "SERVER_PORT"))
+	if err != nil {
+		panic(err)
+	}
 }
