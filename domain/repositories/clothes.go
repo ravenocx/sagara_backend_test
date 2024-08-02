@@ -101,12 +101,10 @@ func (r *clothesRepository) DeleteCloth(id string) error {
 }
 
 func (r *clothesRepository) IncreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error) {
-	var updatedCloth entities.Clothes
+	cloth.Stock += stock
 
-	updatedCloth.Stock += stock
-
-	log.Printf("Clothes to update stock (increase) : %+v", updatedCloth)
-	if err := r.db.Updates(&updatedCloth).Error; err != nil {
+	log.Printf("Clothes to update stock (increase) : %+v", cloth)
+	if err := r.db.Updates(&cloth).Error; err != nil {
 		return nil, err
 	}
 
@@ -114,12 +112,10 @@ func (r *clothesRepository) IncreaseStock(cloth *entities.Clothes, stock int) (*
 }
 
 func (r *clothesRepository) DecreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error) {
-	var updatedCloth entities.Clothes
+	cloth.Stock -= stock
 
-	updatedCloth.Stock -= stock
-
-	log.Printf("Clothes to update stock (reduce) : %+v", updatedCloth)
-	if err := r.db.Updates(&updatedCloth).Error; err != nil {
+	log.Printf("Clothes to update stock (reduce) : %+v", cloth)
+	if err := r.db.Updates(&cloth).Error; err != nil {
 		return nil, err
 	}
 	

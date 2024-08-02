@@ -18,8 +18,8 @@ type ClothesService interface {
 	GetClothByID(id string) (*entities.Clothes, error)
 	UpdateCloth(cloth *entities.Clothes) (*entities.Clothes, error)
 	DeleteCloth(id string) error
-	// IncreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error)
-	// DecreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error)
+	IncreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error)
+	DecreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error)
 }
 
 type clothesService struct {
@@ -115,7 +115,6 @@ func (s *clothesService) UpdateCloth(cloth *entities.Clothes) (*entities.Clothes
 
 	r := repositories.NewClothesRepository(db)
 
-
 	cloth, err = r.UpdateCloth(cloth)
 
 	if err != nil {
@@ -158,7 +157,7 @@ func (s *clothesService) DeleteCloth(id string) error {
 	err = r.DeleteCloth(id)
 
 	if err != nil {
-		
+
 		return &utils.ErrorMessage{
 			Message: "Failed to delete cloth data from database",
 			Code:    http.StatusInternalServerError,
@@ -166,4 +165,50 @@ func (s *clothesService) DeleteCloth(id string) error {
 	}
 
 	return nil
+}
+
+func (s *clothesService) IncreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error) {
+	db, err := db.OpenConnection()
+
+	if err != nil {
+		return nil, &utils.ErrorMessage{
+			Message: "Failed to connect to database",
+			Code:    http.StatusInternalServerError,
+		}
+	}
+
+	r := repositories.NewClothesRepository(db)
+
+	cloth, err = r.IncreaseStock(cloth, stock)
+
+	if err != nil {
+		return nil, &utils.ErrorMessage{
+			Message: "Failed to increase cloth stock",
+			Code:    http.StatusInternalServerError,
+		}
+	}
+	return cloth, nil
+}
+
+func (s *clothesService) DecreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error) {
+	db, err := db.OpenConnection()
+
+	if err != nil {
+		return nil, &utils.ErrorMessage{
+			Message: "Failed to connect to database",
+			Code:    http.StatusInternalServerError,
+		}
+	}
+
+	r := repositories.NewClothesRepository(db)
+
+	cloth, err = r.DecreaseStock(cloth, stock)
+
+	if err != nil {
+		return nil, &utils.ErrorMessage{
+			Message: "Failed to increase cloth stock",
+			Code:    http.StatusInternalServerError,
+		}
+	}
+	return cloth, nil
 }

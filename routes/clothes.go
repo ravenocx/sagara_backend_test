@@ -15,4 +15,7 @@ func SetupClothesRoutes(r *gin.Engine, clothesService services.ClothesService) {
 	router.GET("", clothesController.GetClothes)
 	router.PUT("/:id", clothesController.UpdateCloth)
 	router.DELETE("/:id", clothesController.DeleteCloth)
+
+	router.PUT("/:id/stock/add", clothesController.IncreaseStock)
+	router.PUT("/:id/stock/reduce", clothesController.DecreaseStock)
 }

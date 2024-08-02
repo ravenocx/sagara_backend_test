@@ -7,8 +7,12 @@ type ClothesPayload struct {
 	Stock int     `json:"stock" validate:"required,min=1"`
 }
 
+type StockPayload struct {
+	Quantity int `json:"quantity" validate:"required,min=1"`
+}
+
 type GetClothesQuery struct {
-	Color    string `json:"color"`
-	Size     string `json:"size" validate:"oneof=S M L XL XXL"`
-	Stock    string
+	Color string `json:"color"`
+	Size  string `json:"size" validate:"oneof=S M L XL XXL"`
+	Stock string
 }

@@ -132,3 +132,77 @@ func (c *ClothesController) DeleteCloth(ctx *gin.Context) {
 		"message": "successfully deleted cloth data",
 	})
 }
+
+func (c *ClothesController) IncreaseStock(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	var stockPayload dto.StockPayload
+
+	if err := ctx.ShouldBind(&stockPayload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	validate := utils.NewValidator()
+	if err := validate.Struct(&stockPayload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	cloth, err := c.clothesService.GetClothByID(id)
+	if e, ok := err.(*utils.ErrorMessage); ok {
+		ctx.JSON(e.ErrorCode(), gin.H{"error": e.Error()})
+		return
+	}
+
+	cloth, err = c.clothesService.IncreaseStock(cloth, stockPayload.Quantity)
+	if e, ok := err.(*utils.ErrorMessage); ok {
+		ctx.JSON(e.ErrorCode(), gin.H{"error": e.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "successfully increase cloth stock",
+		"data":    cloth,
+	})
+}
+
+func (c *ClothesController) DecreaseStock(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	var stockPayload dto.StockPayload
+
+	if err := ctx.ShouldBind(&stockPayload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	validate := utils.NewValidator()
+	if err := validate.Struct(&stockPayload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	cloth, err := c.clothesService.GetClothByID(id)
+	if e, ok := err.(*utils.ErrorMessage); ok {
+		ctx.JSON(e.ErrorCode(), gin.H{"error": e.Error()})
+		return
+	}
+
+	// ex -> current stock = 4 , payload = 5, the stock will be -1
+	if stockPayload.Quantity > cloth.Stock {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "stock quantity must be less than current stock"})
+		return
+	}
+
+	cloth, err = c.clothesService.DecreaseStock(cloth, stockPayload.Quantity)
+	if e, ok := err.(*utils.ErrorMessage); ok {
+		ctx.JSON(e.ErrorCode(), gin.H{"error": e.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "successfully decrease cloth stock",
+		"data":    cloth,
+	})
+}
