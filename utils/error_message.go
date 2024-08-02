@@ -8,3 +8,7 @@ type ErrorMessage struct {
 func (e *ErrorMessage) Error() string {
 	return e.Message
 }
+
+func (e *ErrorMessage) ErrorCode() int {
+	return e.Code
+}

@@ -30,7 +30,7 @@ func NewClothesRepository(db *gorm.DB) *clothesRepository {
 }
 
 func (r *clothesRepository) InsertCloth(cloth *entities.Clothes) (*entities.Clothes, error) {
-	if err := r.db.Create(cloth).Error; err != nil {
+	if err := r.db.Create(cloth.ID).Error; err != nil {
 		return nil, err
 	}
 	return cloth, nil

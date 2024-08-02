@@ -31,9 +31,8 @@ func (c *ClothesController) InsertCloth(ctx *gin.Context) {
 	}
 
 	cloth, err := c.clothesService.InsertCloth(cloth)
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if e, ok := err.(*utils.ErrorMessage); ok {
+		ctx.JSON(e.ErrorCode(), gin.H{"error": e.Error()})
 		return
 	}
 

@@ -14,8 +14,8 @@ type ClothesService interface {
 	InsertCloth(cloth *entities.Clothes) (*entities.Clothes, error)
 	GetClothes(query dto.GetClothesQuery) ([]entities.Clothes, error)
 	// GetClothByID() (*entities.Clothes, error)
-	// UpdateCloth(cloth *entities.Clothes) (*entities.Clothes, error)
-	// DeleteCloth(id string) error
+	UpdateCloth(cloth *entities.Clothes) (*entities.Clothes, error)
+	DeleteCloth(id string) error
 	// IncreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error)
 	// DecreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error)
 }
@@ -51,7 +51,7 @@ func (s *clothesService) InsertCloth(cloth *entities.Clothes) (*entities.Clothes
 	return cloth, nil
 }
 
-func (s *clothesService) GetClothes(query dto.GetClothesQuery) ([]entities.Clothes, error){
+func (s *clothesService) GetClothes(query dto.GetClothesQuery) ([]entities.Clothes, error) {
 	db, err := db.OpenConnection()
 	if err != nil {
 		return nil, &utils.ErrorMessage{
@@ -73,3 +73,68 @@ func (s *clothesService) GetClothes(query dto.GetClothesQuery) ([]entities.Cloth
 
 	return cloth, nil
 }
+
+func (s *clothesService) UpdateCloth(cloth *entities.Clothes) (*entities.Clothes, error) {
+	db, err := db.OpenConnection()
+	if err != nil {
+		return nil, &utils.ErrorMessage{
+			Message: "Failed to connect to database",
+			Code:    http.StatusInternalServerError,
+		}
+	}
+
+	r := repositories.NewClothesRepository(db)
+
+	_, err = r.GetClothByID(cloth.ID)
+
+	if err != nil {
+		return nil, &utils.ErrorMessage{
+			Message: "Cloth not found",
+			Code:    http.StatusNotFound,
+		}
+	}
+
+	cloth, err = r.UpdateCloth(cloth)
+
+	if err != nil {
+		return nil, &utils.ErrorMessage{
+			Message: "Failed to update cloth to database",
+			Code : http.StatusInternalServerError,
+		}
+	}
+
+	return cloth, nil
+}
+
+func (s *clothesService) DeleteCloth(id string) error {
+	db, err := db.OpenConnection()
+
+	if err != nil {
+		return &utils.ErrorMessage{
+			Message: "Failed to connect to database",
+			Code:    http.StatusInternalServerError,
+		}
+	}
+
+	r := repositories.NewClothesRepository(db)
+
+	_, err = r.GetClothByID(id)
+
+	if err != nil {
+		return &utils.ErrorMessage{
+			Message: "Failed to get cloth data",
+			Code:    http.StatusInternalServerError,
+		}
+	}
+
+	err = r.DeleteCloth(id)
+
+	if err != nil {
+		return &utils.ErrorMessage{
+			Message: "Failed to delete cloth data",
+			Code:    http.StatusInternalServerError,
+		}
+	}
+
+	return nil
+} 
