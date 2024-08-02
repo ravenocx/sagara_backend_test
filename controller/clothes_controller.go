@@ -25,7 +25,7 @@ func (c *ClothesController) InsertCloth(ctx *gin.Context) {
 
 	cloth := &entities.Clothes{
 		Color: clothPayload.Color,
-		Size: clothPayload.Size,
+		Size:  clothPayload.Size,
 		Price: clothPayload.Price,
 		Stock: clothPayload.Stock,
 	}
@@ -38,7 +38,7 @@ func (c *ClothesController) InsertCloth(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, gin.H{
-		"message" : "successfully add cloth" , 
-		"data" : cloth,
+		"message": "successfully add cloth",
+		"data":    cloth,
 	})
 }

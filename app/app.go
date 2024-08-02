@@ -38,7 +38,7 @@ func StartApp() {
 
 	routes.SetupClothesRoutes(app, clothesService)
 
-	err = app.Run(os.Getenv(":" + "SERVER_PORT"))
+	err = app.Run(":" + os.Getenv("SERVER_PORT"))
 	if err != nil {
 		panic(err)
 	}
