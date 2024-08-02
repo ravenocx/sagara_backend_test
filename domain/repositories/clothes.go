@@ -66,6 +66,8 @@ func (r *clothesRepository) GetClothByID(id string) (*entities.Clothes, error) {
 func (r *clothesRepository) UpdateCloth(cloth *entities.Clothes) (*entities.Clothes, error) {
 	var updatedCloth entities.Clothes
 
+	updatedCloth.ID = cloth.ID
+
 	if cloth.Color != "" {
 		updatedCloth.Color = cloth.Color
 	}

@@ -76,3 +76,46 @@ func (c *ClothesController) GetClothes(ctx *gin.Context) {
 	})
 
 }
+
+func (c *ClothesController) UpdateCloth(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	var clothPayload dto.ClothesPayload
+
+	if err := ctx.ShouldBind(&clothPayload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	validate := utils.NewValidator()
+
+	if clothPayload.Size != "" {
+		if err := validate.Struct(&clothPayload); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	cloth, err := c.clothesService.GetClothByID(id)
+	if e, ok := err.(*utils.ErrorMessage); ok {
+		ctx.JSON(e.ErrorCode(), gin.H{"error": e.Error()})
+		return
+	}
+
+	cloth.Color = clothPayload.Color
+	cloth.Size = clothPayload.Size
+	cloth.Price = clothPayload.Price
+	cloth.Stock = clothPayload.Stock
+
+	cloth, err = c.clothesService.UpdateCloth(cloth)
+	if e, ok := err.(*utils.ErrorMessage); ok {
+		ctx.JSON(e.ErrorCode(), gin.H{"error": e.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "successfully updated cloth",
+		"data":    cloth,
+	})
+
+}

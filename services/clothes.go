@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/ravenocx/clothes-store/db"
@@ -8,12 +9,13 @@ import (
 	"github.com/ravenocx/clothes-store/domain/entities"
 	"github.com/ravenocx/clothes-store/domain/repositories"
 	"github.com/ravenocx/clothes-store/utils"
+	"gorm.io/gorm"
 )
 
 type ClothesService interface {
 	InsertCloth(cloth *entities.Clothes) (*entities.Clothes, error)
 	GetClothes(query dto.GetClothesQuery) ([]entities.Clothes, error)
-	// GetClothByID() (*entities.Clothes, error)
+	GetClothByID(id string) (*entities.Clothes, error)
 	UpdateCloth(cloth *entities.Clothes) (*entities.Clothes, error)
 	DeleteCloth(id string) error
 	// IncreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error)
@@ -44,6 +46,34 @@ func (s *clothesService) InsertCloth(cloth *entities.Clothes) (*entities.Clothes
 	if err != nil {
 		return nil, &utils.ErrorMessage{
 			Message: "Failed to add new cloth",
+			Code:    http.StatusInternalServerError,
+		}
+	}
+
+	return cloth, nil
+}
+
+func (s *clothesService) GetClothByID(id string) (*entities.Clothes, error) {
+	db, err := db.OpenConnection()
+	if err != nil {
+		return nil, &utils.ErrorMessage{
+			Message: "Failed to connect to database",
+			Code:    http.StatusInternalServerError,
+		}
+	}
+
+	r := repositories.NewClothesRepository(db)
+
+	cloth, err := r.GetClothByID(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &utils.ErrorMessage{
+				Message: "Cloth not found",
+				Code:    http.StatusNotFound,
+			}
+		}
+		return nil, &utils.ErrorMessage{
+			Message: "Failed to get cloth data",
 			Code:    http.StatusInternalServerError,
 		}
 	}
@@ -85,21 +115,13 @@ func (s *clothesService) UpdateCloth(cloth *entities.Clothes) (*entities.Clothes
 
 	r := repositories.NewClothesRepository(db)
 
-	_, err = r.GetClothByID(cloth.ID)
-
-	if err != nil {
-		return nil, &utils.ErrorMessage{
-			Message: "Cloth not found",
-			Code:    http.StatusNotFound,
-		}
-	}
 
 	cloth, err = r.UpdateCloth(cloth)
 
 	if err != nil {
 		return nil, &utils.ErrorMessage{
 			Message: "Failed to update cloth to database",
-			Code : http.StatusInternalServerError,
+			Code:    http.StatusInternalServerError,
 		}
 	}
 
@@ -137,4 +159,4 @@ func (s *clothesService) DeleteCloth(id string) error {
 	}
 
 	return nil
-} 
+}
