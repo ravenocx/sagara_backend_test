@@ -41,3 +41,38 @@ func (c *ClothesController) InsertCloth(ctx *gin.Context) {
 		"data":    cloth,
 	})
 }
+
+func (c *ClothesController) GetClothes(ctx *gin.Context) {
+	getClothesQuery := dto.GetClothesQuery{}
+
+	if color := ctx.Query("color"); color != "" {
+		getClothesQuery.Color = color
+	}
+
+	if size := ctx.Query("size"); size != "" {
+		getClothesQuery.Size = size
+
+		// validate the size query
+		validate := utils.NewValidator()
+		if err := validate.Struct(&getClothesQuery); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	// log.Printf("Query Params : %+v" , getClothesQuery)
+	clothes, err := c.clothesService.GetClothes(getClothesQuery)
+	if e, ok := err.(*utils.ErrorMessage); ok {
+		ctx.JSON(e.ErrorCode(), gin.H{"error": e.Error()})
+		return
+	}
+
+	resp := []entities.Clothes{}
+	resp = append(resp, clothes...)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "successfully get clothes",
+		"data":    resp,
+	})
+
+}

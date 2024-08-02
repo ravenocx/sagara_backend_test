@@ -30,7 +30,7 @@ func NewClothesRepository(db *gorm.DB) *clothesRepository {
 }
 
 func (r *clothesRepository) InsertCloth(cloth *entities.Clothes) (*entities.Clothes, error) {
-	if err := r.db.Create(cloth.ID).Error; err != nil {
+	if err := r.db.Create(cloth).Error; err != nil {
 		return nil, err
 	}
 	return cloth, nil
@@ -45,7 +45,7 @@ func (r *clothesRepository) GetClothes(query dto.GetClothesQuery) ([]entities.Cl
 		q += whereQuery
 	}
 
-	log.Printf("Get clothes query : %s", q)
+	log.Printf("Get clothes query : %s, %+v", q, args)
 	var clothes []entities.Clothes
 	if err := r.db.Raw(q, args...).Scan(&clothes).Error; err != nil {
 		return nil, err

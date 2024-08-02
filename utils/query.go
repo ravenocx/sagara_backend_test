@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	LOW_STOCK = "low"
+	LOW_STOCK   = "low"
 	EMPTY_STOCK = "empty"
 )
 
@@ -26,16 +26,14 @@ func GetClothesConstructWhereQuery(query dto.GetClothesQuery) (string, []interfa
 	}
 
 	switch query.Stock {
-	case LOW_STOCK :
+	case LOW_STOCK:
 		whereQuery = append(whereQuery, "stock < 5")
-	case EMPTY_STOCK : 
+	case EMPTY_STOCK:
 		whereQuery = append(whereQuery, "stock = 0")
-	default : 
-		return "" , nil
 	}
 
 	if len(whereQuery) > 0 {
-		return "WHERE " + strings.Join(whereQuery, " AND "), args
+		return " WHERE " + strings.Join(whereQuery, " AND "), args
 	}
 
 	return "", nil

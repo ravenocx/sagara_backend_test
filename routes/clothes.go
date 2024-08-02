@@ -12,4 +12,5 @@ func SetupClothesRoutes(r *gin.Engine, clothesService services.ClothesService) {
 	router := r.Group("/api/v1/clothes")
 
 	router.POST("", clothesController.InsertCloth)
+	router.GET("", clothesController.GetClothes)
 }
