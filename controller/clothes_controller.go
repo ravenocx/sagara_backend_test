@@ -119,3 +119,16 @@ func (c *ClothesController) UpdateCloth(ctx *gin.Context) {
 	})
 
 }
+
+func (c *ClothesController) DeleteCloth(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	if err, ok := c.clothesService.DeleteCloth(id).(*utils.ErrorMessage); ok {
+		ctx.JSON(err.ErrorCode(), gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "successfully deleted cloth data",
+	})
+}

@@ -143,6 +143,12 @@ func (s *clothesService) DeleteCloth(id string) error {
 	_, err = r.GetClothByID(id)
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return &utils.ErrorMessage{
+				Message: "Cloth not found",
+				Code:    http.StatusNotFound,
+			}
+		}
 		return &utils.ErrorMessage{
 			Message: "Failed to get cloth data",
 			Code:    http.StatusInternalServerError,
@@ -152,8 +158,9 @@ func (s *clothesService) DeleteCloth(id string) error {
 	err = r.DeleteCloth(id)
 
 	if err != nil {
+		
 		return &utils.ErrorMessage{
-			Message: "Failed to delete cloth data",
+			Message: "Failed to delete cloth data from database",
 			Code:    http.StatusInternalServerError,
 		}
 	}

@@ -14,4 +14,5 @@ func SetupClothesRoutes(r *gin.Engine, clothesService services.ClothesService) {
 	router.POST("", clothesController.InsertCloth)
 	router.GET("", clothesController.GetClothes)
 	router.PUT("/:id", clothesController.UpdateCloth)
+	router.DELETE("/:id", clothesController.DeleteCloth)
 }
