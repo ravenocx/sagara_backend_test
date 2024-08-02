@@ -13,6 +13,7 @@ import (
 
 func StartApp() {
 	app := gin.New()
+	app.Use(gin.Logger())
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
