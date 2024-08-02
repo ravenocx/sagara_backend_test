@@ -206,3 +206,39 @@ func (c *ClothesController) DecreaseStock(ctx *gin.Context) {
 		"data":    cloth,
 	})
 }
+
+func (c *ClothesController) GetClothEmptyStock(ctx *gin.Context) {
+	getClothesQuery := dto.GetClothesQuery{Stock: "empty"}
+	
+	clothes, err := c.clothesService.GetClothStockQuery(getClothesQuery)
+	if e, ok := err.(*utils.ErrorMessage); ok {
+		ctx.JSON(e.ErrorCode(), gin.H{"error": e.Error()})
+		return
+	}
+
+	resp := []entities.Clothes{}
+	resp = append(resp, clothes...)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "successfully get clothes",
+		"data":    resp,
+	})
+}
+
+func (c *ClothesController) GetClothLowStock(ctx *gin.Context) {
+	getClothesQuery := dto.GetClothesQuery{Stock: "low"}
+	
+	clothes, err := c.clothesService.GetClothStockQuery(getClothesQuery)
+	if e, ok := err.(*utils.ErrorMessage); ok {
+		ctx.JSON(e.ErrorCode(), gin.H{"error": e.Error()})
+		return
+	}
+
+	resp := []entities.Clothes{}
+	resp = append(resp, clothes...)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "successfully get clothes",
+		"data":    resp,
+	})
+}

@@ -115,9 +115,9 @@ func (r *clothesRepository) DecreaseStock(cloth *entities.Clothes, stock int) (*
 	cloth.Stock -= stock
 
 	log.Printf("Clothes to update stock (reduce) : %+v", cloth)
-	if err := r.db.Updates(&cloth).Error; err != nil {
+	if err := r.db.Save(&cloth).Error; err != nil {
 		return nil, err
 	}
-	
+
 	return cloth, nil
 }

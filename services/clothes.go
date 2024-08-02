@@ -20,6 +20,8 @@ type ClothesService interface {
 	DeleteCloth(id string) error
 	IncreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error)
 	DecreaseStock(cloth *entities.Clothes, stock int) (*entities.Clothes, error)
+	GetClothStockQuery(query dto.GetClothesQuery) ([]entities.Clothes, error)
+	// GetClothLowStock(query dto.GetClothesQuery) ([]entities.Clothes, error)
 }
 
 type clothesService struct {
@@ -211,4 +213,28 @@ func (s *clothesService) DecreaseStock(cloth *entities.Clothes, stock int) (*ent
 		}
 	}
 	return cloth, nil
+}
+
+func (s *clothesService) GetClothStockQuery(query dto.GetClothesQuery) ([]entities.Clothes, error) {
+	db, err := db.OpenConnection()
+
+	if err != nil {
+		return nil, &utils.ErrorMessage{
+			Message: "Failed to connect to database",
+			Code:    http.StatusInternalServerError,
+		}
+	}
+
+	r := repositories.NewClothesRepository(db)	
+
+	clothes, err := r.GetClothes(query)
+
+	if err != nil {
+		return nil, &utils.ErrorMessage{
+			Message: "Failed to get clothes data",
+			Code:    http.StatusInternalServerError,
+		}
+	}
+
+	return clothes, nil
 }
